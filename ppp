@@ -1,0 +1,43 @@
+import pandas as pd
+
+df = pd.read_csv("mall_customer_segmentation.csv")
+
+print(df.head())
+print(df.info())
+
+print(df.isnull().sum())
+
+print(df.dtypes)
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.histplot(df['Age'])
+plt.show()
+
+sns.histplot(df['Annual Income (k$)'])
+plt.show()
+
+sns.histplot(df['Spending Score (1-100)'])
+plt.show()
+
+correlation_matrix = df.corr()
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+plt.show()
+
+df['Genre'] = df['Genre'].map({'Male': 0, 'Female': 1})
+
+# Шаг 4: Кластеризация
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+features = df[['Age', 'Annual Income (k$)', 'Spending Score (1-100)']]
+
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(features)
+
+kmeans = KMeans(n_clusters=3, random_state=42)
+df['Cluster'] = kmeans.fit_predict(scaled_features)
+
+print("\nРезультаты кластеризации:")
+print(df[['CustomerID', 'Age', 'Annual Income (k$)', 'Spending Score (1-100)', 'Cluster']])
